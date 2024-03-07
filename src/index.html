@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Front-end do Servidor</title>
+    </head>
+    <body>
+        <h1>Frontend Servidor</h1>
+        <input type="text" id="messageInput" placeholder="Digite sua mensagem" />
+        <button onclick="sendMessage()">Enviar para Todos</button>
+
+        <div id="userList"></div>
+
+        <h2>Responder Mensagem:</h2>
+        <select id="clientSelect"></select>
+        <input type="text" id="responseInput" placeholder="Digite sua resposta" />
+        <button onclick="sendPrivateMessage()">Enviar Resposta</button>
+
+        <div id="chatMessages"></div>
+
+        <script>
+            // Use a fixed clientId for the client
+            const fixedClientId = "yourFixedClientId"; // Replace with your desired fixed clientId
+            const ws = new WebSocket(`ws://localhost:3000?clientId=${fixedClientId}`);
+
+            function sendMessage() {
+                const messageInput = document.getElementById("messageInput");
+                const message = messageInput.value;
+
+                if (message.trim() !== "") {
+                    ws.send(message);
+                    messageInput.value = "";
+                }
+            }
+
+            function sendPrivateMessage() {
+                const clientSelect = document.getElementById("clientSelect");
+                const responseInput = document.getElementById("responseInput");
+
+                const selectedClientId = clientSelect.value;
+                const responseMessage = responseInput.value;
+
+                if (selectedClientId && responseMessage.trim() !== "") {
+                    ws.send(`@${selectedClientId} ${responseMessage}`);
+                    responseInput.value = "";
+                }
+            }
+
+            ws.onmessage = (event) => {
+                console.log(event);
+                var data = JSON.parse(event.data);
+                if (typeof data == "string") data = JSON.parse(data);
+                if (data.type == "userList") {
+                    updateConnectedUsers(data.users);
+                    updateClientSelect(data.users);
+                } else if (data.type === "message") {
+                    const chatMessages = document.getElementById("chatMessages");
+                    const messageElement = document.createElement("p");
+                    messageElement.textContent = data.content;
+                    chatMessages.appendChild(messageElement);
+                }
+            };
+
+            function updateConnectedUsers(users) {
+                const userList = document.getElementById("userList");
+                userList.innerHTML = "<strong>Usuários Conectados:</strong><br>" + users.join("<br>");
+            }
+
+            function updateClientSelect(users) {
+                const clientSelect = document.getElementById("clientSelect");
+                clientSelect.innerHTML = '<option value="">Selecionar Cliente</option>';
+
+                users.forEach((user) => {
+                    const option = document.createElement("option");
+                    option.value = user;
+                    option.textContent = user;
+                    clientSelect.appendChild(option);
+                });
+            }
+        </script>
+    </body>
+</html>
