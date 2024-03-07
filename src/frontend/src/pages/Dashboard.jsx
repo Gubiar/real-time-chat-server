@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { useEffect, useState } from "react";
 import { useAuth } from "../hooks/AuthProvider";
 
@@ -48,39 +49,182 @@ function Dashboard() {
     const auth = useAuth();
 
     return (
-        <div>
-            <h1>Welcome! {auth.user?.username}</h1>
-            <button onClick={() => auth.logOut()} className="btn-submit">
-                logout
-            </button>
-            <h1>Frontend Servidor</h1>
-            <input type="text" value={message} onChange={(e) => setMessage(e.target.value)} placeholder="Digite sua mensagem" />
-            <button onClick={sendMessage}>Enviar para Todos</button>
-
-            <div id="userList">
-                <strong>Usuários Conectados:</strong>
-                <br />
-                {users.join("<br>")}
-            </div>
-
-            <h2>Responder Mensagem:</h2>
-            <select id="clientSelect" value={selectedClient} onChange={(e) => setSelectedClient(e.target.value)}>
-                <option value="">Selecionar Cliente</option>
-                {users.map((user) => (
-                    <option key={user} value={user}>
-                        {user}
-                    </option>
-                ))}
-            </select>
-            <input type="text" value={response} onChange={(e) => setResponse(e.target.value)} placeholder="Digite sua resposta" />
-            <button onClick={sendPrivateMessage}>Enviar Resposta</button>
-
-            <div id="chatMessages">
-                {chatMessages.map((message, index) => (
-                    <p key={index}>{message}</p>
-                ))}
+        <div className="grid min-h-screen bg-white md:grid-cols-2" style={{ gridTemplateColumns: "1fr 3fr" }}>
+            <aside className="flex flex-col w-full border-b md:max-w-xs md:border-b-0 lg:max-w-sm xl:max-w-xs">
+                <div className="flex items-center justify-between p-4 border-gray-200 border-r">
+                    <button className="rounded-full w-10 h-10">
+                        <MenuIcon className="h-6 w-6" />
+                        <span className="sr-only">Toggle sidebar</span>
+                    </button>
+                    <a className="flex items-center space-x-2 font-bold" href="#">
+                        <span>Usuários Ativos</span>
+                    </a>
+                    <button className="rounded-full w-10 h-10">
+                        <SearchIcon className="h-6 w-6" />
+                        <span className="sr-only">Search</span>
+                    </button>
+                </div>
+                <nav className="flex-1 overflow-y-auto">
+                    <div className="flex items-center p-4 space-x-3">
+                        <UserIcon />
+                        <div className="space-y-1">
+                            <h4 className="text-sm font-bold">@jaredpalmer</h4>
+                            <p className="text-xs text-gray-500">Jared Palmer</p>
+                        </div>
+                    </div>
+                    <div className="flex items-center p-4 space-x-3">
+                        <UserIcon />
+                        <div className="space-y-1">
+                            <h4 className="text-sm font-bold">@shadcn</h4>
+                            <p className="text-xs text-gray-500">Shadcn</p>
+                        </div>
+                    </div>
+                    <div className="flex items-center p-4 space-x-3">
+                        <UserIcon />
+                        <div className="space-y-1">
+                            <h4 className="text-sm font-bold">@maxleiter</h4>
+                            <p className="text-xs text-gray-500">Max Leiter</p>
+                        </div>
+                    </div>
+                    <div className="flex items-center p-4 space-x-3">
+                        <UserIcon />
+                        <div className="space-y-1">
+                            <h4 className="text-sm font-bold">@shuding_</h4>
+                            <p className="text-xs text-gray-500">Shu</p>
+                        </div>
+                    </div>
+                </nav>
+            </aside>
+            <div className="flex flex-col min-h-screen">
+                <header className="flex items-center justify-between p-4 border-b border-gray-200">
+                    <button className="rounded-md -left-2">
+                        <ChevronLeftIcon className="h-6 w-6" />
+                        <span className="sr-only">Back</span>
+                    </button>
+                    <div className="flex-1 min-w-0 flex items-center space-x-4">
+                        <h1 className="text-lg font-semibold">Jared Palmer</h1>
+                    </div>
+                    <button className="rounded-md -right-2">
+                        <MoreHorizontalIcon className="h-6 w-6" />
+                        <span className="sr-only">More</span>
+                    </button>
+                </header>
+                <div className="flex-1 p-4">
+                    <div className="grid gap-4">
+                        <div className="flex items-start space-x-2">
+                            <UserIcon />
+                            <div className="rounded-lg border">
+                                <p className="p-4 text-sm/relaxed">Salve</p>
+                            </div>
+                        </div>
+                        <div className="flex items-end space-x-2 justify-end">
+                            <div className="rounded-lg border max-w-[70%]">
+                                <p className="p-4 text-sm/relaxed">
+                                    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ipsa, unde voluptates cum ullam quibusdam officiis, dolores nobis
+                                    eum velit blanditiis minus suscipit fugiat esse at! Distinctio perferendis quibusdam et tempore.
+                                </p>
+                            </div>
+                            <UserIcon />
+                        </div>
+                        <div className="flex items-start space-x-2">
+                            <UserIcon />
+                            <div className="rounded-lg border">
+                                <p className="p-4 text-sm/relaxed">Im sorry to hear that. Let me take a look at your account.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
+    );
+}
+
+function ChevronLeftIcon(props) {
+    return (
+        <svg
+            {...props}
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+        >
+            <path d="m15 18-6-6 6-6" />
+        </svg>
+    );
+}
+
+function MenuIcon(props) {
+    return (
+        <svg
+            {...props}
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+        >
+            <line x1="4" x2="20" y1="12" y2="12" />
+            <line x1="4" x2="20" y1="6" y2="6" />
+            <line x1="4" x2="20" y1="18" y2="18" />
+        </svg>
+    );
+}
+
+function MoreHorizontalIcon(props) {
+    return (
+        <svg
+            {...props}
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+        >
+            <circle cx="12" cy="12" r="1" />
+            <circle cx="19" cy="12" r="1" />
+            <circle cx="5" cy="12" r="1" />
+        </svg>
+    );
+}
+
+function SearchIcon(props) {
+    return (
+        <svg
+            {...props}
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+        >
+            <circle cx="11" cy="11" r="8" />
+            <path d="m21 21-4.3-4.3" />
+        </svg>
+    );
+}
+
+function UserIcon() {
+    return (
+        <span className="relative flex shrink-0 overflow-hidden rounded-full w-8 h-8 bg-blue-500">
+            <span className="flex h-full w-full items-center justify-center rounded-full bg-muted text-white text-sm">JD</span>
+        </span>
     );
 }
 
