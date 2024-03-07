@@ -79,4 +79,4 @@ O servidor estará disponível em http://localhost:3000.
 
 ## Licença
 
-Este projeto está licenciado sob a Licença ISC. Consulte o arquivo LICENSE para obter mais detalhes.
+Este projeto está licenciado sob a Licença GNU GPLv3. Consulte o arquivo LICENSE para obter mais detalhes.
