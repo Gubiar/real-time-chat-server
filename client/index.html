@@ -233,8 +233,8 @@
                     ws.send(JSON.stringify({ clientId: localStorage.getItem("token"), message }));
                     const c = document.getElementById("messages-container");
                     c.innerHTML += `
-                            <div class="message">
-                                <div class="message-item flex-row-reverse">
+                            <div class="message justify-end">
+                                <div class="message-item justify-end">
                                     <div class="message-content ">
                                         <p class="text">
                                             ${message}
@@ -264,19 +264,19 @@
                 const isScrolledToBottom = c.scrollHeight - c.clientHeight <= c.scrollTop + 1;
 
                 c.innerHTML += `
-                        <div class="message ${json.sender == "ADM" ? "justify-end" : undefined}">
-                            <div class="message-item ${json.sender == "ADM" ? "justify-end" : undefined}">
-                                <div class="message-content">
-                                    <p class="text">
-                                        ${json.content}
-                                    </p>
-                                </div>
-                                <span class="avatar">
-                                    <span class="avatar-text">${String(json.sender).slice(0, 2).toUpperCase()}</span>
-                                </span>
+                    <div class="message ${json.sender != "ADM" ? "justify-end" : undefined}">
+                        <div class="message-item ${json.sender != "ADM" ? "justify-end" : undefined} flex-row-reverse">
+                            <div class="message-content">
+                                <p class="text">
+                                    ${json.content}
+                                </p>
                             </div>
+                            <span class="avatar">
+                                <span class="avatar-text">${String(json.sender).slice(0, 2).toUpperCase()}</span>
+                            </span>
                         </div>
-                    `;
+                    </div>
+                `;
 
                 if (isScrolledToBottom) {
                     // Se já estiver no final, faz o scroll automaticamente

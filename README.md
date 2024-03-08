@@ -25,13 +25,13 @@ Outras bibliotecas e dependências do projeto estão disponíveis nos arquivos p
 1. Clone o repositório:
 
 ```bash
-git clone https://github.com/seu-usuario/nome-do-repositorio.git
+git clone https://github.com/Gubiar/real-time-chat-server.git
 ```
 
 2. Instale as dependências do servidor:
 
 ```bash
-cd nome-do-repositorio/server/backend
+cd real-time-chat-server/server/backend
 npm install
 ```
 
