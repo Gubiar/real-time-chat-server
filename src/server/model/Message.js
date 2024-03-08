@@ -13,6 +13,14 @@ class Message {
         });
     }
 
+    toObject() {
+        return {
+            content: this.content,
+            sender: this.sender,
+            timestamp: this.timestamp,
+        };
+    }
+
     static fromJson(json) {
         const data = JSON.parse(json);
         return new Message(data.content, data.sender, new Date(data.timestamp));

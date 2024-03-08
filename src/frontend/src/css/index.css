@@ -25,3 +25,7 @@ ol {
 a {
     text-decoration: none;
 }
+
+.button-hover-child:hover * {
+    stroke: white;
+}
