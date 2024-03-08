@@ -20,14 +20,14 @@ app.use(helmet());
 app.use(bodyParser.json());
 
 console.log(__dirname);
-app.use(express.static(path.join(__dirname, "../frontend/dist/")));
+app.use(express.static(path.join(__dirname, "../../frontend/dist/")));
 
 app.get("/", (req, res) => {
-    res.sendFile(path.join(__dirname, "../frontend/dist/index.html"));
+    res.sendFile(path.join(__dirname, "../../frontend/dist/index.html"));
 });
 
 app.get("*", (req, res) => {
-    res.sendFile(path.join(__dirname, "../frontend/dist/index.html"));
+    res.sendFile(path.join(__dirname, "../../frontend/dist/index.html"));
 });
 
 // Rota para realizar o login

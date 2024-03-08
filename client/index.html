@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet" />
+        <title>Cliente do Chat</title>
+
+        <style>
+            * {
+                box-sizing: border-box;
+                scroll-behavior: smooth;
+                font-family: "Inter", sans-serif;
+            }
+
+            html,
+            body {
+                margin: 0px;
+                padding: 0px;
+                width: 100%;
+                height: 100%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            ul,
+            li,
+            ol {
+                list-style: none;
+            }
+
+            a {
+                text-decoration: none;
+            }
+
+            .chatbot-container {
+                width: 350px;
+                height: 550px;
+                background: rgba(255, 255, 255, 0.9);
+                box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.27);
+                backdrop-filter: blur(4px);
+                -webkit-backdrop-filter: blur(4px);
+                border-radius: 5px;
+                border: 1px solid rgba(255, 255, 255, 0.18);
+
+                display: flex;
+                flex-direction: column;
+                position: fixed;
+                bottom: 16px;
+                right: 2rem;
+                overflow: hidden;
+            }
+
+            .messages-container {
+                display: flex;
+                flex-direction: column;
+                column-gap: 8px;
+                width: 100%;
+                height: 100%;
+                max-height: 100%;
+                overflow-y: scroll;
+                background-color: #dcf8c6;
+                padding: 12px;
+            }
+
+            .chatbot-container header {
+                width: 100%;
+                padding: 16px 12px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border-bottom: 1px solid;
+                background-color: #1a5e54;
+                color: #fff;
+            }
+
+            .chatbot-container header * {
+                margin: 0px;
+            }
+
+            .chatbot-container footer {
+                width: 100%;
+                padding: 16px 12px;
+                display: flex;
+                justify-content: space-between;
+            }
+
+            .chatbot-container footer input {
+                width: calc(100% - 60px);
+                display: flex;
+                background-color: transparent;
+                border: 1px solid #aaa;
+                align-items: center;
+                border-radius: 5px;
+                height: 40px;
+                padding-left: 12px;
+            }
+
+            .chatbot-container footer button {
+                width: 40px;
+                height: 40px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background-color: #47d366;
+                border: 0px;
+                border-radius: 5px;
+                transition: all 0.2s ease-in-out;
+                cursor: pointer;
+            }
+
+            .chatbot-container footer button:hover {
+                filter: brightness(1.2);
+            }
+
+            .justify-end {
+                justify-content: flex-end;
+            }
+
+            .flex-row-reverse {
+                flex-direction: row-reverse;
+            }
+
+            .message {
+                display: flex;
+                width: 100%;
+                margin-bottom: 12px;
+            }
+
+            .message-item {
+                display: flex;
+                width: auto;
+                gap: 12px;
+                max-width: calc(100% - 32px);
+                height: fit-content;
+                align-items: flex-start;
+                background-color: #ece5dd;
+                border-radius: 16px;
+                padding: 10px;
+            }
+
+            .message-content {
+                border-radius: 0.5rem;
+                border-width: 1px;
+                margin-top: 5px;
+            }
+
+            .text {
+                padding: 0px;
+                margin: 0px;
+                font-size: 0.79rem;
+                line-height: 1.25rem;
+            }
+
+            .avatar {
+                display: flex;
+                overflow: hidden;
+                border-radius: 9999px;
+                width: 2rem;
+                height: 2rem;
+                min-width: 2rem;
+                min-height: 2rem;
+                background-color: #3b82f6;
+            }
+
+            .avatar-text {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                border-radius: 9999px;
+                width: 100%;
+                height: 100%;
+                font-size: 0.75rem;
+                line-height: 1rem;
+                color: #ffffff;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Conteúdo do seu site</h1>
+
+        <div class="chatbot-container">
+            <header>
+                <h4>Atendimento GO</h4>
+            </header>
+            <div id="messages-container" class="messages-container"></div>
+            <footer>
+                <input type="text" id="messageInput" placeholder="Digite sua mensagem" />
+                <button onclick="sendMessage()">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="white"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        class="lucide lucide-send-horizontal"
+                    >
+                        <path d="m3 3 3 9-3 9 19-9Z" />
+                        <path d="M6 12h16" />
+                    </svg>
+                </button>
+            </footer>
+        </div>
+
+        <script>
+            let ws;
+            const name = localStorage.getItem("name");
+            const token = localStorage.getItem("token");
+
+            if (!name || !token || name == "null" || token == "null") {
+                localStorage.removeItem("name");
+                localStorage.removeItem("token");
+                const userName = prompt("Por favor, digite seu nome");
+                localStorage.setItem("name", userName);
+                ws = new WebSocket(`ws://192.168.15.35:3000?name=${userName}`);
+            } else {
+                ws = new WebSocket(`ws://192.168.15.35:3000?name=${name}&token=${token}`);
+            }
+
+            function sendMessage() {
+                const messageInput = document.getElementById("messageInput");
+                const message = messageInput.value;
+
+                if (message.trim() !== "") {
+                    ws.send(JSON.stringify({ clientId: localStorage.getItem("token"), message }));
+                    const c = document.getElementById("messages-container");
+                    c.innerHTML += `
+                            <div class="message">
+                                <div class="message-item flex-row-reverse">
+                                    <div class="message-content ">
+                                        <p class="text">
+                                            ${message}
+                                        </p>
+                                    </div>
+                                    <span class="avatar">
+                                        <span class="avatar-text">${localStorage.getItem("name").slice(0, 2)}</span>
+                                    </span>
+                                </div>
+                            </div>
+                        `;
+                    messageInput.value = "";
+                }
+            }
+
+            ws.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+                console.log(data);
+
+                if (data.clientId) {
+                    //Salva o ID no armazenamento local para contatos futuros
+                    localStorage.setItem("token", data.clientId);
+                }
+
+                const json = data.message ?? data;
+                const c = document.getElementById("messages-container");
+                const isScrolledToBottom = c.scrollHeight - c.clientHeight <= c.scrollTop + 1;
+
+                c.innerHTML += `
+                        <div class="message ${json.sender == "ADM" ? "justify-end" : undefined}">
+                            <div class="message-item ${json.sender == "ADM" ? "justify-end" : undefined}">
+                                <div class="message-content">
+                                    <p class="text">
+                                        ${json.content}
+                                    </p>
+                                </div>
+                                <span class="avatar">
+                                    <span class="avatar-text">${String(json.sender).slice(0, 2).toUpperCase()}</span>
+                                </span>
+                            </div>
+                        </div>
+                    `;
+
+                if (isScrolledToBottom) {
+                    // Se já estiver no final, faz o scroll automaticamente
+                    c.scrollTop = c.scrollHeight - c.clientHeight;
+                } else {
+                    // Caso contrário, você pode adicionar uma animação de scroll
+                    c.scrollTo({
+                        top: c.scrollHeight - c.clientHeight,
+                        behavior: "smooth",
+                    });
+                }
+            };
+        </script>
+    </body>
+</html>
