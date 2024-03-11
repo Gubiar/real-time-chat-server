@@ -57,6 +57,14 @@ JWT_SECRET="your_secret_key"
 
 NODE_ENV="development"
 NODE_URL="http://localhost"
+
+DBHOST="your_db_host"
+DBPORT="3306" # Or another port
+DBUSER="your_db_user"
+DBPASSWORD="your_db_password"
+DATABASE="your_db_table"
+DBAESKEY="your_db_AES_key" # Use to Encrypt or decrypt data (AES_DECRYPT and AES_ENCRYPT)
+
 ```
 
 Substitua `your_secret_key` por uma chave secreta para assinar tokens JWT.
