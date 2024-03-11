@@ -36,6 +36,11 @@ async function handleConnection(ws, req) {
                 });
             }
             clientsList.push(client); // Adiciona a nova conexão na lista de clientes
+
+            //envio para a dashboard
+            if (adminClient && adminClient.ws.readyState === WebSocket.OPEN) {
+                adminClient.ws.send(JSON.stringify(client.toJson()));
+            }
         } else {
             const admMessage = new Message(
                 `Olá ${client.name}. Como podemos ajudar? Tire sua dúvida abaixo que responderemos o mais breve possível!`,
