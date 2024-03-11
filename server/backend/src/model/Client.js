@@ -14,7 +14,10 @@ class Client {
         return JSON.stringify({
             id: this.id,
             name: this.name,
-            chatHistory: this.chatHistory.map((message) => message.toObject()),
+            chatHistory: this.chatHistory.map((message) => {
+                console.log(message.toObject());
+                return message.toObject();
+            }),
         });
     }
 

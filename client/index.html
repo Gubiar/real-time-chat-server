@@ -317,8 +317,12 @@
             const name = localStorage.getItem("name");
             const token = localStorage.getItem("token");
 
+            console.log(name);
+            console.log(token);
+            console.log(name && token && name != "null" && token != "null");
+
             if (name && token && name != "null" && token != "null") {
-                ws = new WebSocket(`ws://192.168.15.35:3000?name=${name}&token=${token}`);
+                ws = new WebSocket(`ws://192.168.15.35:3000?name=${name}&clientId=${token}`);
                 if (ws) setWsOnMessage();
             }
 
@@ -353,20 +357,20 @@
                     const c = document.getElementById("messages-container");
                     const isScrolledToBottom = c.scrollHeight - c.clientHeight <= c.scrollTop + 1;
 
+                    const name = localStorage.getItem("name");
+
                     c.innerHTML += `
-                            <div class="message ${json.sender != "ADM" ? "justify-end" : undefined}">
-                                <div class="message-item ${
-                                    json.sender != "ADM" ? "justify-end" : undefined
-                                } flex-row-reverse">
+                            <div class="message ${json.sender != "ADM" ? "justify-end" : ""}">
+                                <div class="message-item ${json.sender != "ADM" ? "justify-end" : "flex-row-reverse"} ">
                                     <div class="message-content">
                                         <p class="text">
                                             ${json.content}
                                         </p>
                                     </div>
                                     <span class="avatar">
-                                        <span class="avatar-text">${String(json.sender)
-                                            .slice(0, 2)
-                                            .toUpperCase()}</span>
+                                        <span class="avatar-text">${
+                                            json.sender == "ADM" ? "AD" : name.slice(0, 2).toUpperCase()
+                                        }</span>
                                     </span>
                                 </div>
                             </div>

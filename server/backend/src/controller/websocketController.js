@@ -1,39 +1,18 @@
+const { getClientChat, saveClientChat, initDb } = require("../db/db");
 const { Client } = require("../model/Client");
 const { Message } = require("../model/Message");
 require("dotenv").config();
 const WebSocket = require("ws");
-const mysql = require("mysql2");
 
 let clientsList = [];
 let adminClient;
 const adminId = process.env.ADMINID;
 
-const connection = mysql.createConnection({
-    host: process.env.DBHOST,
-    user: process.env.DBUSER,
-    port: process.env.DBPORT,
-    password: process.env.DBPASSWORD,
-    database: process.env.DATABASE,
+initDb().then((data) => {
+    console.log("Banco iniciado.");
 });
 
-connection.addListener("error", (err) => {
-    console.log(err);
-});
-
-const sql = "SELECT * FROM `historico` WHERE `cliente` = ?";
-const values = ["teste"];
-
-connection.execute(sql, values, (err, rows, fields) => {
-    if (err instanceof Error) {
-        console.log(err);
-        return;
-    }
-
-    console.log(rows);
-    console.log(fields);
-});
-
-function handleConnection(ws, req) {
+async function handleConnection(ws, req) {
     const origin = req.headers["origin"].split(",")[0].trim();
     const clientId = getClientIdFromUrl(req.url) ?? generateClientId();
     const isAdmin = String(origin).startsWith(process.env.NODE_URL) && adminId == clientId;
@@ -42,21 +21,41 @@ function handleConnection(ws, req) {
     } else {
         const name = getClientNameFromUrl(req.url);
         const client = new Client(clientId, name ?? "Cliente 1", ws);
-        const admMessage = new Message(
-            `Olá ${client.name}. Como podemos ajudar? Tire sua dúvida abaixo que responderemos o mais breve possível!`,
-            "ADM"
-        );
-        client.addMessage(admMessage);
-        clientsList.push(client); //Adiciona a nova conexão na lista de clientes
-        client.ws.send(
-            JSON.stringify({
-                clientId,
-                message: admMessage.toObject(),
-            })
-        );
+
+        const historicoCliente = await getClientChat(client.id);
+
+        if (historicoCliente) {
+            const data = JSON.parse(historicoCliente);
+
+            if (data) {
+                const chatHistory = Array.from(data.chatHistory);
+                chatHistory.forEach((element) => {
+                    const messageToSend = new Message(element.content, element.sender);
+                    client.addMessage(messageToSend);
+                    client.ws.send(messageToSend.toJson());
+                });
+            }
+            clientsList.push(client); // Adiciona a nova conexão na lista de clientes
+        } else {
+            const admMessage = new Message(
+                `Olá ${client.name}. Como podemos ajudar? Tire sua dúvida abaixo que responderemos o mais breve possível!`,
+                "ADM"
+            );
+            client.addMessage(admMessage);
+
+            clientsList.push(client); //Adiciona a nova conexão na lista de clientes
+            client.ws.send(
+                JSON.stringify({
+                    clientId,
+                    message: admMessage.toObject(),
+                })
+            );
+        }
+
+        await saveClientChat(client);
     }
 
-    ws.on("message", (data, isBinary) => {
+    ws.on("message", async (data, isBinary) => {
         const message = isBinary ? data : JSON.parse(data);
 
         if (message.isAdm) {
@@ -75,6 +74,9 @@ function handleConnection(ws, req) {
                 if (adminClient && adminClient.ws.readyState === WebSocket.OPEN) {
                     adminClient.ws.send(clientsList[clientIndex].toJson());
                 }
+
+                //salva no banco
+                await saveClientChat(clientsList[clientIndex]);
             }
         } else {
             //Mensagem do cliente para o ADM
@@ -84,12 +86,14 @@ function handleConnection(ws, req) {
 
             if (clientIndex > -1) {
                 clientsList[clientIndex].addMessage(new Message(message.message, "client"));
-                clientsList[clientIndex].toJson();
 
                 //envio para a dashboard
                 if (adminClient && adminClient.ws.readyState === WebSocket.OPEN) {
                     adminClient.ws.send(JSON.stringify(clientsList[clientIndex].toJson()));
                 }
+
+                //salva no banco
+                await saveClientChat(clientsList[clientIndex]);
             }
         }
 
