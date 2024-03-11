@@ -2,10 +2,36 @@ const { Client } = require("../model/Client");
 const { Message } = require("../model/Message");
 require("dotenv").config();
 const WebSocket = require("ws");
+const mysql = require("mysql2");
 
 let clientsList = [];
 let adminClient;
 const adminId = process.env.ADMINID;
+
+const connection = mysql.createConnection({
+    host: process.env.DBHOST,
+    user: process.env.DBUSER,
+    port: process.env.DBPORT,
+    password: process.env.DBPASSWORD,
+    database: process.env.DATABASE,
+});
+
+connection.addListener("error", (err) => {
+    console.log(err);
+});
+
+const sql = "SELECT * FROM `historico` WHERE `cliente` = ?";
+const values = ["teste"];
+
+connection.execute(sql, values, (err, rows, fields) => {
+    if (err instanceof Error) {
+        console.log(err);
+        return;
+    }
+
+    console.log(rows);
+    console.log(fields);
+});
 
 function handleConnection(ws, req) {
     const origin = req.headers["origin"].split(",")[0].trim();
@@ -32,12 +58,10 @@ function handleConnection(ws, req) {
 
     ws.on("message", (data, isBinary) => {
         const message = isBinary ? data : JSON.parse(data);
-        console.log(message);
 
         if (message.isAdm) {
             //resposta do adm para cliente
             const clientIndex = clientsList.findIndex((cada) => {
-                console.log(`${cada.id} - ${message.reciver}`);
                 return String(cada.id) == String(message.reciver);
             });
 
@@ -51,13 +75,10 @@ function handleConnection(ws, req) {
                 if (adminClient && adminClient.ws.readyState === WebSocket.OPEN) {
                     adminClient.ws.send(clientsList[clientIndex].toJson());
                 }
-
-                // printClients();
             }
         } else {
             //Mensagem do cliente para o ADM
             const clientIndex = clientsList.findIndex((cada) => {
-                console.log(`${cada.id} - ${message.clientId}`);
                 return String(cada.id) == String(message.clientId);
             });
 
@@ -69,10 +90,10 @@ function handleConnection(ws, req) {
                 if (adminClient && adminClient.ws.readyState === WebSocket.OPEN) {
                     adminClient.ws.send(JSON.stringify(clientsList[clientIndex].toJson()));
                 }
-
-                // printClients();
             }
         }
+
+        printClients();
     });
 
     ws.on("close", () => {
@@ -99,8 +120,6 @@ function handleConnection(ws, req) {
             );
         }
     });
-
-    printClients();
 }
 
 function generateClientId() {
@@ -120,8 +139,7 @@ function getClientNameFromUrl(url) {
 function printClients() {
     console.log("Clientes ativos: \n");
     clientsList.forEach((value, key) => {
-        console.log(`ClientIndex: ${key}\nValue:\n`);
-        console.log(value.toObject());
+        console.log(JSON.stringify(value.toObject()));
     });
 }
 
