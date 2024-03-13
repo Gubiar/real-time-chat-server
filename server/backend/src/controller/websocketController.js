@@ -3,6 +3,7 @@ const { Client } = require("../model/Client");
 const { Message } = require("../model/Message");
 require("dotenv").config();
 const WebSocket = require("ws");
+const crypto = require("crypto");
 
 let clientsList = [];
 let adminClient;
@@ -12,10 +13,39 @@ initDb().then((data) => {
     console.log("Banco iniciado.");
 });
 
+function validateVariable(variable) {
+    return variable && variable !== "null" && variable !== "undefined" ? variable : "";
+}
+
+function createHash(input) {
+    const hash = crypto.createHash("sha256");
+    hash.update(input);
+    return hash.digest("hex");
+}
+
 async function handleConnection(ws, req) {
-    const origin = req.headers["origin"].split(",")[0].trim();
-    const clientId = getClientIdFromUrl(req.url) ?? generateClientId();
-    const isAdmin = String(origin).startsWith(process.env.NODE_URL) && adminId == clientId;
+    const origin = validateVariable(req.headers["origin"]?.split(",")[0].trim());
+    const remoteAddress = validateVariable(req.connection.remoteAddress);
+    const xForwardedFor = validateVariable(req.headers["x-forwarded-for"]);
+    const clientLocationHash = createHash(String(origin) + String(remoteAddress) + String(xForwardedFor));
+
+    const clientId = getClientIdFromUrl(req.url) ?? generateClientId(clientLocationHash);
+
+    const clientData = JSON.parse(decrypt(clientId));
+    if (clientData.location !== clientLocationHash) {
+        //usuário inválido
+        ws.send(
+            JSON.stringify({
+                success: false,
+                message: "token inválido",
+            })
+        );
+        return;
+    }
+
+    const isAdmin =
+        String(origin).startsWith(process.env.NODE_URL) && adminId == clientId && String(remoteAddress) == "::1"; //Apenas acesso local
+    console.log(`isAdmin: ${isAdmin}`);
     if (isAdmin) {
         adminClient = new Client(clientId, "Administrador", ws);
     } else {
@@ -49,12 +79,14 @@ async function handleConnection(ws, req) {
             client.addMessage(admMessage);
 
             clientsList.push(client); //Adiciona a nova conexão na lista de clientes
-            client.ws.send(
-                JSON.stringify({
-                    clientId,
-                    message: admMessage.toObject(),
-                })
-            );
+            setTimeout(() => {
+                client.ws.send(
+                    JSON.stringify({
+                        clientId,
+                        message: admMessage.toObject(),
+                    })
+                );
+            }, 1000);
         }
 
         await saveClientChat(client);
@@ -116,9 +148,6 @@ async function handleConnection(ws, req) {
             return true;
         });
 
-        //verifica se a desconexão foi do adm
-        if (adminClient.ws == ws) adminClient = undefined;
-
         //Atualiza a dashboard
         if (adminClient && adminClient.ws.readyState === WebSocket.OPEN) {
             adminClient.ws.send(
@@ -131,8 +160,13 @@ async function handleConnection(ws, req) {
     });
 }
 
-function generateClientId() {
-    return Date.now().toString(36) + Math.random().toString(36).substr(2);
+function generateClientId(clientLocation) {
+    const id = Date.now().toString(36) + Math.random().toString(36).substr(2);
+    const data = {
+        id,
+        location: clientLocation,
+    };
+    return encrypt(JSON.stringify(data));
 }
 
 function getClientIdFromUrl(url) {
@@ -150,6 +184,26 @@ function printClients() {
     clientsList.forEach((value, key) => {
         console.log(JSON.stringify(value.toObject()));
     });
+}
+
+function encrypt(text) {
+    const secret = process.env.CRYPTO_KEY;
+    const iv = process.env.CRYPTO_IV;
+
+    let cipher = crypto.createCipheriv("aes-256-cbc", secret, iv);
+    let crypted = cipher.update(text, "utf8", "hex");
+    crypted += cipher.final("hex");
+    return crypted;
+}
+
+function decrypt(text) {
+    const secret = process.env.CRYPTO_KEY;
+    const iv = process.env.CRYPTO_IV;
+
+    let decipher = crypto.createDecipheriv("aes-256-cbc", secret, iv);
+    let dec = decipher.update(text, "hex", "utf8");
+    dec += decipher.final("utf8");
+    return dec;
 }
 
 module.exports = { handleConnection };

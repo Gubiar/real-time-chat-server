@@ -37,6 +37,51 @@
                 text-decoration: none;
             }
 
+            .open-chat {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: auto;
+                height: auto;
+                border-radius: 10px;
+                padding: 0.5rem 1.5rem;
+                border: none;
+                background-color: #3b82f6;
+                position: fixed;
+                bottom: 1rem;
+                right: 2rem;
+                cursor: pointer;
+                transition: all 0.2s ease-in-out;
+                box-shadow: 0px 0px 3px 2px rgba(0, 0, 0, 0.15);
+            }
+
+            .open-chat:hover {
+                filter: brightness(1.2);
+            }
+
+            .open-chat span {
+                color: #fff;
+                font-weight: 600;
+                font-size: 1.1rem;
+            }
+
+            .open-chat-img {
+                width: 45px;
+                height: 45px;
+                background-color: #fff;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border-radius: 50%;
+                margin-right: 1rem;
+            }
+
+            .open-chat .open-chat-img svg {
+                width: 70%;
+                height: auto;
+                object-fit: contain;
+            }
+
             .chatbot-container {
                 width: 350px;
                 height: 550px;
@@ -47,12 +92,21 @@
                 border-radius: 5px;
                 border: 1px solid rgba(255, 255, 255, 0.18);
 
-                display: flex;
                 flex-direction: column;
                 position: fixed;
                 bottom: 16px;
                 right: 2rem;
                 overflow: hidden;
+
+                visibility: hidden;
+                right: calc(-1 * 100vw + 400px);
+                transition: all 0.2s ease-in-out;
+                display: flex;
+            }
+
+            .chatbot-container-active {
+                visibility: visible;
+                right: 2rem;
             }
 
             .messages-container {
@@ -69,10 +123,10 @@
 
             .chatbot-container header:not(.first-overlay-header) {
                 width: 100%;
-                padding: 16px 12px;
+                padding: 16px;
                 display: flex;
                 align-items: center;
-                justify-content: center;
+                justify-content: space-between;
                 border-bottom: 1px solid;
                 background-color: #1a5e54;
                 color: #fff;
@@ -80,6 +134,15 @@
 
             .chatbot-container header:not(.first-overlay-header) * {
                 margin: 0px;
+            }
+
+            .chatbot-container header:not(.first-overlay-header) button {
+                border: none;
+                background-color: transparent;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
             }
 
             .chatbot-container footer {
@@ -235,65 +298,125 @@
     <body>
         <h1>Conteúdo do seu site</h1>
 
-        <div class="chatbot-container">
-            <div id="first-overlay" class="first-overlay">
-                <header class="first-overlay-header">
-                    <svg
-                        width="80px"
-                        height="80px"
-                        viewBox="0 0 1024 1024"
-                        class="icon"
-                        version="1.1"
-                        xmlns="http://www.w3.org/2000/svg"
-                    >
-                        <path
-                            d="M885.8 383.8h-90.4c12.3 15.8 19.7 35.6 19.7 57.1v194c0 51.3-42 93.2-93.2 93.2H494.1c12.1 31 42.2 53.1 77.4 53.1h314.3c45.6 0 83-37.3 83-83V466.8c-0.1-45.7-37.4-83-83-83z"
-                            fill="#FFB89A"
-                        />
-                        <path
-                            d="M780.7 582.4V286.3c0-74.2-60.7-134.9-134.9-134.9H198.2c-74.2 0-134.9 60.7-134.9 134.9v296.1c0 70.5 54.8 128.7 123.8 134.4 0 0-20 155.4 4.9 155.4s188.4-154.9 188.4-154.9h265.3c74.3 0 135-60.7 135-134.9z m-424.1 74.9l-17.4 16.4c-0.3 0.3-34.5 32.7-73.2 67.1-8.5 7.5-16.2 14.3-23.3 20.5 1.9-20.9 3.9-36.6 3.9-36.8l8-62.3L192 657c-38.5-3.2-68.7-36-68.7-74.6V286.3c0-19.9 7.8-38.6 22.1-52.8 14.2-14.2 33-22.1 52.8-22.1h447.6c19.9 0 38.6 7.8 52.8 22.1 14.2 14.2 22.1 33 22.1 52.8v296.1c0 19.9-7.8 38.6-22.1 52.8-14.2 14.2-33 22.1-52.8 22.1H356.6z"
-                            fill="#45484C"
-                        />
-                        <path
-                            d="M830.3 337.9c-16.2-3.3-32.1 7.1-35.4 23.3-3.3 16.2 7.1 32.1 23.3 35.4 39 8 67.3 42.7 67.3 82.5v177c0 41.6-31.1 77.5-72.3 83.4l-32.7 4.7 7.8 32.1c2 8.1 3.9 16.8 5.8 25.3-17.6-16.4-37.3-35.2-55.2-52.7l-8.7-8.6H562.5c-21.9 0-36.6-1.4-47.2-8.6-13.7-9.3-32.4-5.8-41.7 7.9-9.3 13.7-5.8 32.4 7.9 41.7 25.7 17.5 55.3 19 81 19h143.2c10 9.7 27.3 26.3 45 42.8 16.2 15.1 29.6 27.1 39.8 35.9 20 17 29.3 23.1 41.6 23.1 9.7 0 18.7-4.4 24.8-12.1 10.1-12.9 10.2-29.1 0.5-78.7-1.4-7.2-2.9-14.2-4.3-20.6 54.4-21.1 92.4-74.3 92.4-134.6v-177c0.1-68-48.4-127.4-115.2-141.2z"
-                            fill="#45484C"
-                        />
-                        <path
-                            d="M434.6 602.8c-35.9 0-71-17.1-98.8-48.1-24.6-27.5-39.3-61.6-39.3-91.4v-29.7l29.7-0.3c0.4 0 36.2-0.4 95.4-0.4 16.6 0 30 13.4 30 30s-13.4 30-30 30c-22.3 0-41.2 0.1-56.2 0.1 3.8 7.1 8.8 14.5 15.1 21.6 16 17.9 35.7 28.1 54.1 28.1s38.1-10.3 54.1-28.1c6.5-7.3 11.6-14.9 15.4-22.2-13.7-2.8-24.1-15-24-29.5 0.1-16.5 13.5-29.9 30-29.9h0.1c27.1 0.1 32.5 0.2 33.6 0.3l28.9 1.1v28.9c0 29.8-14.7 63.9-39.3 91.4-27.9 31-62.9 48.1-98.8 48.1z m107.1-109.5z"
-                            fill="#33CC99"
-                        />
-                    </svg>
-                    <h3>Para começarmos o chat, precisamos saber o seu nome:</h3>
-                </header>
-                <form id="form-connextion">
-                    <input type="text" placeholder="Ex: João Carlos" id="nome" name="nome" />
-                    <button type="submit" class="btn-create-connection">Iniciar contato</button>
-                </form>
+        <button id="open-chat" class="open-chat" onclick="toogleShowGoChat()" data-status="inactive">
+            <div class="open-chat-img">
+                <svg
+                    width="80px"
+                    height="80px"
+                    viewBox="0 0 1024 1024"
+                    class="icon"
+                    version="1.1"
+                    xmlns="http://www.w3.org/2000/svg"
+                >
+                    <path
+                        d="M885.8 383.8h-90.4c12.3 15.8 19.7 35.6 19.7 57.1v194c0 51.3-42 93.2-93.2 93.2H494.1c12.1 31 42.2 53.1 77.4 53.1h314.3c45.6 0 83-37.3 83-83V466.8c-0.1-45.7-37.4-83-83-83z"
+                        fill="#FFB89A"
+                    />
+                    <path
+                        d="M780.7 582.4V286.3c0-74.2-60.7-134.9-134.9-134.9H198.2c-74.2 0-134.9 60.7-134.9 134.9v296.1c0 70.5 54.8 128.7 123.8 134.4 0 0-20 155.4 4.9 155.4s188.4-154.9 188.4-154.9h265.3c74.3 0 135-60.7 135-134.9z m-424.1 74.9l-17.4 16.4c-0.3 0.3-34.5 32.7-73.2 67.1-8.5 7.5-16.2 14.3-23.3 20.5 1.9-20.9 3.9-36.6 3.9-36.8l8-62.3L192 657c-38.5-3.2-68.7-36-68.7-74.6V286.3c0-19.9 7.8-38.6 22.1-52.8 14.2-14.2 33-22.1 52.8-22.1h447.6c19.9 0 38.6 7.8 52.8 22.1 14.2 14.2 22.1 33 22.1 52.8v296.1c0 19.9-7.8 38.6-22.1 52.8-14.2 14.2-33 22.1-52.8 22.1H356.6z"
+                        fill="#45484C"
+                    />
+                    <path
+                        d="M830.3 337.9c-16.2-3.3-32.1 7.1-35.4 23.3-3.3 16.2 7.1 32.1 23.3 35.4 39 8 67.3 42.7 67.3 82.5v177c0 41.6-31.1 77.5-72.3 83.4l-32.7 4.7 7.8 32.1c2 8.1 3.9 16.8 5.8 25.3-17.6-16.4-37.3-35.2-55.2-52.7l-8.7-8.6H562.5c-21.9 0-36.6-1.4-47.2-8.6-13.7-9.3-32.4-5.8-41.7 7.9-9.3 13.7-5.8 32.4 7.9 41.7 25.7 17.5 55.3 19 81 19h143.2c10 9.7 27.3 26.3 45 42.8 16.2 15.1 29.6 27.1 39.8 35.9 20 17 29.3 23.1 41.6 23.1 9.7 0 18.7-4.4 24.8-12.1 10.1-12.9 10.2-29.1 0.5-78.7-1.4-7.2-2.9-14.2-4.3-20.6 54.4-21.1 92.4-74.3 92.4-134.6v-177c0.1-68-48.4-127.4-115.2-141.2z"
+                        fill="#45484C"
+                    />
+                    <path
+                        d="M434.6 602.8c-35.9 0-71-17.1-98.8-48.1-24.6-27.5-39.3-61.6-39.3-91.4v-29.7l29.7-0.3c0.4 0 36.2-0.4 95.4-0.4 16.6 0 30 13.4 30 30s-13.4 30-30 30c-22.3 0-41.2 0.1-56.2 0.1 3.8 7.1 8.8 14.5 15.1 21.6 16 17.9 35.7 28.1 54.1 28.1s38.1-10.3 54.1-28.1c6.5-7.3 11.6-14.9 15.4-22.2-13.7-2.8-24.1-15-24-29.5 0.1-16.5 13.5-29.9 30-29.9h0.1c27.1 0.1 32.5 0.2 33.6 0.3l28.9 1.1v28.9c0 29.8-14.7 63.9-39.3 91.4-27.9 31-62.9 48.1-98.8 48.1z m107.1-109.5z"
+                        fill="#33CC99"
+                    />
+                </svg>
             </div>
+
+            <span>Atendimento ao cliente</span>
+        </button>
+
+        <div id="chatbot-container" class="chatbot-container">
             <header>
                 <h4>Atendimento GO</h4>
-            </header>
-            <div id="messages-container" class="messages-container"></div>
-            <footer>
-                <input type="text" id="messageInput" placeholder="Digite sua mensagem" />
-                <button onclick="sendMessage()">
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="24"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="white"
-                        stroke-width="2"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        class="lucide lucide-send-horizontal"
-                    >
-                        <path d="m3 3 3 9-3 9 19-9Z" />
-                        <path d="M6 12h16" />
+                <button onclick="toogleShowGoChat()" type="button">
+                    <svg width="30px" height="30px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M8.00386 9.41816C7.61333 9.02763 7.61334 8.39447 8.00386 8.00395C8.39438 7.61342 9.02755 7.61342 9.41807 8.00395L12.0057 10.5916L14.5907 8.00657C14.9813 7.61605 15.6144 7.61605 16.0049 8.00657C16.3955 8.3971 16.3955 9.03026 16.0049 9.42079L13.4199 12.0058L16.0039 14.5897C16.3944 14.9803 16.3944 15.6134 16.0039 16.0039C15.6133 16.3945 14.9802 16.3945 14.5896 16.0039L12.0057 13.42L9.42097 16.0048C9.03045 16.3953 8.39728 16.3953 8.00676 16.0048C7.61624 15.6142 7.61624 14.9811 8.00676 14.5905L10.5915 12.0058L8.00386 9.41816Z"
+                            fill="#FFFFFF"
+                        />
+                        <path
+                            fill-rule="evenodd"
+                            clip-rule="evenodd"
+                            d="M23 12C23 18.0751 18.0751 23 12 23C5.92487 23 1 18.0751 1 12C1 5.92487 5.92487 1 12 1C18.0751 1 23 5.92487 23 12ZM3.00683 12C3.00683 16.9668 7.03321 20.9932 12 20.9932C16.9668 20.9932 20.9932 16.9668 20.9932 12C20.9932 7.03321 16.9668 3.00683 12 3.00683C7.03321 3.00683 3.00683 7.03321 3.00683 12Z"
+                            fill="#FFFFFF"
+                        />
                     </svg>
                 </button>
-            </footer>
+            </header>
+            <div
+                style="
+                    position: relative;
+                    display: flex;
+                    flex-direction: column;
+                    width: 100%;
+                    height: calc(100% - 72px);
+                    overflow-y: scroll;
+                "
+            >
+                <div id="first-overlay" class="first-overlay">
+                    <header class="first-overlay-header">
+                        <svg
+                            width="80px"
+                            height="80px"
+                            viewBox="0 0 1024 1024"
+                            class="icon"
+                            version="1.1"
+                            xmlns="http://www.w3.org/2000/svg"
+                        >
+                            <path
+                                d="M885.8 383.8h-90.4c12.3 15.8 19.7 35.6 19.7 57.1v194c0 51.3-42 93.2-93.2 93.2H494.1c12.1 31 42.2 53.1 77.4 53.1h314.3c45.6 0 83-37.3 83-83V466.8c-0.1-45.7-37.4-83-83-83z"
+                                fill="#FFB89A"
+                            />
+                            <path
+                                d="M780.7 582.4V286.3c0-74.2-60.7-134.9-134.9-134.9H198.2c-74.2 0-134.9 60.7-134.9 134.9v296.1c0 70.5 54.8 128.7 123.8 134.4 0 0-20 155.4 4.9 155.4s188.4-154.9 188.4-154.9h265.3c74.3 0 135-60.7 135-134.9z m-424.1 74.9l-17.4 16.4c-0.3 0.3-34.5 32.7-73.2 67.1-8.5 7.5-16.2 14.3-23.3 20.5 1.9-20.9 3.9-36.6 3.9-36.8l8-62.3L192 657c-38.5-3.2-68.7-36-68.7-74.6V286.3c0-19.9 7.8-38.6 22.1-52.8 14.2-14.2 33-22.1 52.8-22.1h447.6c19.9 0 38.6 7.8 52.8 22.1 14.2 14.2 22.1 33 22.1 52.8v296.1c0 19.9-7.8 38.6-22.1 52.8-14.2 14.2-33 22.1-52.8 22.1H356.6z"
+                                fill="#45484C"
+                            />
+                            <path
+                                d="M830.3 337.9c-16.2-3.3-32.1 7.1-35.4 23.3-3.3 16.2 7.1 32.1 23.3 35.4 39 8 67.3 42.7 67.3 82.5v177c0 41.6-31.1 77.5-72.3 83.4l-32.7 4.7 7.8 32.1c2 8.1 3.9 16.8 5.8 25.3-17.6-16.4-37.3-35.2-55.2-52.7l-8.7-8.6H562.5c-21.9 0-36.6-1.4-47.2-8.6-13.7-9.3-32.4-5.8-41.7 7.9-9.3 13.7-5.8 32.4 7.9 41.7 25.7 17.5 55.3 19 81 19h143.2c10 9.7 27.3 26.3 45 42.8 16.2 15.1 29.6 27.1 39.8 35.9 20 17 29.3 23.1 41.6 23.1 9.7 0 18.7-4.4 24.8-12.1 10.1-12.9 10.2-29.1 0.5-78.7-1.4-7.2-2.9-14.2-4.3-20.6 54.4-21.1 92.4-74.3 92.4-134.6v-177c0.1-68-48.4-127.4-115.2-141.2z"
+                                fill="#45484C"
+                            />
+                            <path
+                                d="M434.6 602.8c-35.9 0-71-17.1-98.8-48.1-24.6-27.5-39.3-61.6-39.3-91.4v-29.7l29.7-0.3c0.4 0 36.2-0.4 95.4-0.4 16.6 0 30 13.4 30 30s-13.4 30-30 30c-22.3 0-41.2 0.1-56.2 0.1 3.8 7.1 8.8 14.5 15.1 21.6 16 17.9 35.7 28.1 54.1 28.1s38.1-10.3 54.1-28.1c6.5-7.3 11.6-14.9 15.4-22.2-13.7-2.8-24.1-15-24-29.5 0.1-16.5 13.5-29.9 30-29.9h0.1c27.1 0.1 32.5 0.2 33.6 0.3l28.9 1.1v28.9c0 29.8-14.7 63.9-39.3 91.4-27.9 31-62.9 48.1-98.8 48.1z m107.1-109.5z"
+                                fill="#33CC99"
+                            />
+                        </svg>
+                        <h3>Para começarmos o chat, precisamos saber o seu nome:</h3>
+                    </header>
+                    <form id="form-connection">
+                        <input type="text" placeholder="Ex: João Carlos" id="nome" name="nome" />
+                        <button type="submit" id="btn-create-connection" class="btn-create-connection">
+                            Iniciar contato
+                        </button>
+                    </form>
+                </div>
+
+                <div id="messages-container" class="messages-container"></div>
+                <footer>
+                    <input type="text" id="messageInput" placeholder="Digite sua mensagem" />
+                    <button onclick="sendMessage()">
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="24"
+                            height="24"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="white"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            class="lucide lucide-send-horizontal"
+                        >
+                            <path d="m3 3 3 9-3 9 19-9Z" />
+                            <path d="M6 12h16" />
+                        </svg>
+                    </button>
+                </footer>
+            </div>
         </div>
 
         <script>
@@ -306,7 +429,7 @@
                 }
             };
 
-            var form = document.getElementById("form-connextion");
+            const form = document.getElementById("form-connection");
             function handleForm(event) {
                 event.preventDefault();
                 createConnection();
@@ -314,32 +437,37 @@
             form.addEventListener("submit", handleForm);
 
             let ws;
+
             const name = localStorage.getItem("name");
             const token = localStorage.getItem("token");
 
-            console.log(name);
-            console.log(token);
-            console.log(name && token && name != "null" && token != "null");
-
             if (name && token && name != "null" && token != "null") {
+                setIsLoading(true);
                 ws = new WebSocket(`ws://192.168.15.35:3000?name=${name}&clientId=${token}`);
-                if (ws) setWsOnMessage();
+                setIsLoading(false);
+                ws.onopen = (event) => {
+                    console.log("onOpen");
+                    console.log(event);
+                    setWsOnMessage();
+                };
             }
 
-            function createConnection() {
+            async function createConnection() {
                 localStorage.removeItem("name");
                 localStorage.removeItem("token");
                 const nome = document.getElementById("nome").value;
-                console.log(nome);
 
-                if (String(nome).length > 0) {
+                if (nome.length > 0) {
                     localStorage.setItem("name", nome);
+                    setIsLoading(true);
                     ws = new WebSocket(`ws://192.168.15.35:3000?name=${nome}`);
-
-                    if (ws) {
+                    setIsLoading(false);
+                    ws.onopen = (event) => {
+                        console.log("onOpen");
+                        console.log(event);
                         setWsOnMessage();
-                        document.getElementById("first-overlay").style.display = "none";
-                    }
+                    };
+                    document.getElementById("first-overlay").style.display = "none";
                 }
             }
 
@@ -360,21 +488,21 @@
                     const name = localStorage.getItem("name");
 
                     c.innerHTML += `
-                            <div class="message ${json.sender != "ADM" ? "justify-end" : ""}">
-                                <div class="message-item ${json.sender != "ADM" ? "justify-end" : "flex-row-reverse"} ">
-                                    <div class="message-content">
-                                        <p class="text">
-                                            ${json.content}
-                                        </p>
-                                    </div>
-                                    <span class="avatar">
-                                        <span class="avatar-text">${
-                                            json.sender == "ADM" ? "AD" : name.slice(0, 2).toUpperCase()
-                                        }</span>
-                                    </span>
+                        <div class="message ${json.sender != "ADM" ? "justify-end" : ""}">
+                            <div class="message-item ${json.sender != "ADM" ? "justify-end" : "flex-row-reverse"} ">
+                                <div class="message-content">
+                                    <p class="text">
+                                        ${json.content}
+                                    </p>
                                 </div>
+                                <span class="avatar">
+                                    <span class="avatar-text">${
+                                        json.sender == "ADM" ? "AD" : name.slice(0, 2).toUpperCase()
+                                    }</span>
+                                </span>
                             </div>
-                        `;
+                        </div>
+                    `;
 
                     if (isScrolledToBottom) {
                         // Se já estiver no final, faz o scroll automaticamente
@@ -397,21 +525,132 @@
                     ws.send(JSON.stringify({ clientId: localStorage.getItem("token"), message }));
                     const c = document.getElementById("messages-container");
                     c.innerHTML += `
-                            <div class="message justify-end">
-                                <div class="message-item justify-end">
-                                    <div class="message-content ">
-                                        <p class="text">
-                                            ${message}
-                                        </p>
-                                    </div>
-                                    <span class="avatar">
-                                        <span class="avatar-text">${localStorage.getItem("name").slice(0, 2)}</span>
-                                    </span>
+                        <div class="message justify-end">
+                            <div class="message-item justify-end">
+                                <div class="message-content ">
+                                    <p class="text">
+                                        ${message}
+                                    </p>
                                 </div>
+                                <span class="avatar">
+                                    <span class="avatar-text">${localStorage.getItem("name").slice(0, 2)}</span>
+                                </span>
                             </div>
-                        `;
+                        </div>
+                    `;
                     messageInput.value = "";
                 }
+            }
+
+            function toogleShowGoChat() {
+                const btn = document.getElementById("open-chat");
+                const chat = document.getElementById("chatbot-container");
+
+                if (String(btn.getAttribute("data-status")) === "active") {
+                    btn.style.display = "flex";
+                    chat.style.display = "none";
+                    //delay de 200ms
+                    setTimeout(() => chat.classList.remove("chatbot-container-active"), 100);
+                    btn.setAttribute("data-status", "inactive");
+                } else {
+                    btn.style.display = "none";
+                    chat.style.display = "flex";
+                    //delay de 200ms
+                    setTimeout(() => chat.classList.add("chatbot-container-active"), 100);
+                    btn.setAttribute("data-status", "active");
+                }
+            }
+
+            function setIsLoading(value) {
+                const btn = document.getElementById("btn-create-connection");
+
+                if (!value) {
+                    btn.innerHTML = "Iniciar Contato";
+                    return;
+                }
+
+                const content = `
+                <svg
+                    class="container"
+                    viewBox="0 0 40 40"
+                    height="30"
+                    width="30"
+                    >
+                    <circle 
+                        class="track"
+                        cx="20" 
+                        cy="20" 
+                        r="17.5" 
+                        pathlength="100" 
+                        stroke-width="5px" 
+                        fill="none" 
+                    />
+                    <circle 
+                        class="car"
+                        cx="20" 
+                        cy="20" 
+                        r="17.5" 
+                        pathlength="100" 
+                        stroke-width="5px" 
+                        fill="none" 
+                    />
+                    </svg>
+
+                    <style>
+                        .container {
+                            --uib-size: 30px;
+                            --uib-color: white;
+                            --uib-speed: 2s;
+                            --uib-bg-opacity: 0;
+                            height: var(--uib-size);
+                            width: var(--uib-size);
+                            transform-origin: center;
+                            animation: rotate var(--uib-speed) linear infinite;
+                            will-change: transform;
+                            overflow: visible;
+                        }
+
+                        .car {
+                            fill: none;
+                            stroke: var(--uib-color);
+                            stroke-dasharray: 1, 200;
+                            stroke-dashoffset: 0;
+                            stroke-linecap: round;
+                            animation: stretch calc(var(--uib-speed) * 0.75) ease-in-out infinite;
+                            will-change: stroke-dasharray, stroke-dashoffset;
+                            transition: stroke 0.5s ease;
+                        }
+
+                        .track {
+                            fill: none;
+                            stroke: var(--uib-color);
+                            opacity: var(--uib-bg-opacity);
+                            transition: stroke 0.5s ease;
+                        }
+
+                        @keyframes rotate {
+                            100% {
+                            transform: rotate(360deg);
+                            }
+                        }
+
+                        @keyframes stretch {
+                            0% {
+                            stroke-dasharray: 0, 150;
+                            stroke-dashoffset: 0;
+                            }
+                            50% {
+                            stroke-dasharray: 75, 150;
+                            stroke-dashoffset: -25;
+                            }
+                            100% {
+                            stroke-dashoffset: -100;
+                            }
+                        }
+                    </style>
+                `;
+
+                btn.innerHTML = content;
             }
         </script>
     </body>

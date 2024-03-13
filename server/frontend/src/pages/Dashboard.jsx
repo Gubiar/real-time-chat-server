@@ -12,7 +12,8 @@ function Dashboard() {
     const [inputValue, setInputValue] = useState("");
 
     useEffect(() => {
-        const fixedClientId = "aa45d6eb-670c-4019-ad1b-85d07ca73772"; // Replace with your desired fixed clientId
+        const fixedClientId =
+            "c34d78748c29f8b124cd378273b11519a5189bee88cd05ca2dbe975707711af27540b5a355bb2313091b7293cb9bc8cbcc19f88da187aaed49268531e1b4e47d2a4f9258251beda147b8c2fc6c8dd5bcc2e4f5982cfa53649aaaccfdcc99b9d84354466130dcccf3e1a25ac29290621b";
         const ws = new WebSocket(`ws://localhost:3000?clientId=${fixedClientId}`);
 
         ws.onmessage = (event) => {
